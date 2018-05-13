@@ -3,27 +3,37 @@ const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const bodyParser = require('body-parser');
+const passport = require('passport');
 
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(bodyParser.json());
+
 
 // Require Routes
 const users = require('./routes/api/users');
 const profile = require('./routes/api/profile');
 const posts = require('./routes/api/posts');
 
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+
+
 // DB Config
 const db = require('./config/keys').mongoURI;
 
-// Connect to MongoDB
+// Connect to MongoDB mLab
 mongoose
 	.connect(db)
 	.then(() => console.log('MongoDB Connected'))
 	.catch(err => console.log(err));
 
 
-// Initialize App
-app.get('/', (req, res) => res.send('Paisley Park'));
+// Passport middleware
+app.use(passport.initialize());
+
+// Passport Config
+require('./config/passport')(passport);
+
+
 
 // Use Routes
 app.use('/api/users', users);
